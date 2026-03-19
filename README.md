@@ -105,9 +105,11 @@ Production-first TypeScript monorepo for selector-first, policy-constrained web 
 
 ## Boot Steps
 
-1. Install dependencies:
+1. Install dependencies (matching CI environment):
 
 ```bash
+corepack enable
+corepack use pnpm@9.12.0
 pnpm install
 ```
 

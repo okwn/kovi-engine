@@ -7,7 +7,7 @@ Thank you for your interest in contributing to Kovi! This document provides guid
 ### Prerequisites
 
 - Node.js 22+
-- pnpm 9.12.0+
+- pnpm 9.12.0+ (recommended: `corepack use pnpm@9.12.0` to match CI)
 - Docker (for local infrastructure)
 
 ### Getting Started
