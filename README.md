@@ -125,6 +125,12 @@ cp .env.example .env
 docker compose -f infra/docker-compose/docker-compose.yml up -d
 ```
 
+4. (Optional but recommended) Run full pre-PR checks:
+
+```bash
+pnpm check
+```
+
 4. Run services (separate terminals):
 
 ```bash

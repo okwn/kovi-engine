@@ -11,6 +11,7 @@
     "test": "pnpm -r --if-present test",
     "verify:env": "tsx scripts/validate-env.ts",
     "verify:migrations": "tsx scripts/verify-migrations.ts",
+    "check": "pnpm verify:env && pnpm verify:migrations && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "format": "prettier --write ."
   },
   "devDependencies": {

@@ -32,28 +32,24 @@ pnpm --filter @kovi/orchestrator dev
 pnpm --filter @kovi/extractor-worker dev
 pnpm --filter @kovi/browser-worker dev
 pnpm --filter @kovi/admin dev
+
+# Run full pre-PR checks
+pnpm check
 ```
 
 ### Running Checks
 
 ```bash
-# Lint
-pnpm lint
+# Single pre-PR validation (recommended)
+pnpm check
 
-# Type check
-pnpm typecheck
-
-# Run all tests
-pnpm test
-
-# Build
-pnpm build
-
-# Verify environment
+# Individual steps (if you need to iterate on a specific area)
 pnpm verify:env
-
-# Verify migrations
 pnpm verify:migrations
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
 ```
 
 ## Project Structure
