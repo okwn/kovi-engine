@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { DestinationRow, KoviDatabase } from '@kovi/db';
 import { validateEventEnvelope } from '@kovi/contracts';
 import type { EventEnvelope } from '../envelope.js';
-import { DestinationRegistry } from './registry.js';
+import type { DestinationRegistry } from './registry.js';
 import type { DestinationPluginContext, DestinationSecretProvider } from './types.js';
 
 export interface DestinationDispatchDeps {
