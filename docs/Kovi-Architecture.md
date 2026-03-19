@@ -103,6 +103,44 @@ kovi-engine/
   pnpm-workspace.yaml
   README.md
 
+## 2a) Implemented Monorepo Layout and Package Boundaries
+
+The current codebase implements the architecture above as a pnpm + Turborepo monorepo with the following concrete responsibilities:
+
+- **Runtime apps**
+  - `apps/api` (`@kovi/api`): Fastify HTTP runtime. Wires configuration, DB, events and observability, and composes route modules from `@kovi/api-core`.
+  - `apps/orchestrator` (`@kovi/orchestrator`): Temporal worker for scheduling and orchestrating source runs.
+  - `apps/browser-worker` (`@kovi/browser-worker`): JS-rendered extraction worker (Crawlee + Playwright).
+  - `apps/extractor-worker` (`@kovi/extractor-worker`): static extraction worker that executes source adapters and packaged adapters.
+  - `apps/admin` (`@kovi/admin`): admin/operator UI/API surface for day-to-day control plane usage.
+
+- **Core platform packages**
+  - `packages/api` (`@kovi/api-core`): reusable API/business logic and route layer. Owns HTTP contracts and mapping from DB/events to JSON responses.
+  - `packages/config` (`@kovi/config`): environment/config loading and validation.
+  - `packages/contracts` (`@kovi/contracts`): change delivery/event contracts.
+  - `packages/db` (`@kovi/db`): database access layer and schema mapping.
+  - `packages/events` (`@kovi/events`): destination registry, destination manager, and event bus integration.
+  - `packages/observability` (`@kovi/observability`): OpenTelemetry wiring, common tracing/metrics helpers.
+  - `packages/shared` (`@kovi/shared`): shared utilities, logging, and common types.
+
+- **Adapter SDKs and extension surface**
+  - `packages/source-sdk` (`@kovi/source-sdk`): platform-level source adapter contract (`SourceDefinition`, `SourceAdapter`, `PageType`, `NormalizedEntity`) and SDK helpers (normalization, extraction/test harness).
+  - `packages/adapter-sdk` (`@kovi/adapter-sdk`): adapter authoring SDK that external adapter authors should depend on. Builds on `@kovi/source-sdk` and `@kovi/contracts` to provide higher-level authoring utilities.
+
+- **Packaged adapters and discovery**
+  - `adapters/`: packaged source adapters that can be shipped as artifacts.
+  - `apps/extractor-worker/src/adapter-registry.ts` uses `@kovi/source-sdk` to create an in-memory adapter registry.
+  - At startup, the extractor worker:
+    - always registers first-party adapters,
+    - if the `KOVI_ADAPTER_MANIFEST_DIR` environment variable is set, scans that directory for packaged adapter manifests and registers them via `loadPackagedAdapterManifestsFromDir` / `registerExternalPackagedAdapter`.
+  - This makes adapter loading configurable at runtime without changing core app code.
+
+New contributors should:
+
+- Import **runtime apps** (e.g. `@kovi/api`) only as deployment/runtime entrypoints.
+- Import **platform packages** (`@kovi/api-core`, `@kovi/db`, `@kovi/events`, etc.) only from other server-side code within the monorepo.
+- Import **`@kovi/adapter-sdk`** when building external adapters that integrate with Kovi.
+
 ## 3) Service Boundaries and Responsibilities
 
 1. API Service (Fastify preferred)

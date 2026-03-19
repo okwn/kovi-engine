@@ -98,6 +98,8 @@ Production-first TypeScript monorepo for selector-first, policy-constrained web 
 - packages/events
 - packages/observability
 - packages/shared
+- packages/api (exposed as `@kovi/api-core`)
+- packages/adapter-sdk
 - infra/docker-compose
 - infra/migrations
 - infra/temporal
@@ -197,6 +199,23 @@ Defined in packages/source-sdk and requires each source to provide:
 - scheduleInterval
 - changeDetection
 - exportPolicy
+
+High-level boundaries:
+
+- `@kovi/api` (apps/api): runtime Fastify HTTP service exposing tenant/admin/operator APIs.
+- `@kovi/api-core` (packages/api): reusable API/business-logic and route layer used by the runtime API service and tests.
+- `@kovi/source-sdk`: platform-level source adapter contracts and helper utilities used by core services and first-party adapters.
+- `@kovi/adapter-sdk`: adapter authoring utilities for adapter/package authors; designed as the extension-facing SDK built on top of the source SDK and contracts.
+
+Packaged adapters and discovery:
+
+- Packaged source adapters live under `adapters/` and are loaded by the extractor worker (`apps/extractor-worker`) at runtime.
+- `apps/extractor-worker/src/adapter-registry.ts` bootstraps an in-memory registry using helpers from `@kovi/source-sdk`.
+- If the `KOVI_ADAPTER_MANIFEST_DIR` environment variable is set, the extractor worker will:
+  - scan that directory for packaged adapter manifests,
+  - register them into the adapter registry before any extraction run,
+  - expose them through the registry APIs used by orchestrator and workers.
+- This lets operators and integrators ship additional adapters as packaged artifacts without changing the core services.
 
 ## Migrations
 
