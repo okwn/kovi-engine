@@ -1,0 +1,116 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_DB: kovi
+      POSTGRES_USER: kovi
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+    volumes:
+      - kovi_postgres_data:/var/lib/postgresql/data
+      - ../migrations:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U kovi -d kovi']
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: always
+
+  nats:
+    image: nats:2.10-alpine
+    command: ['-js']
+    restart: always
+
+  temporal:
+    image: temporalio/auto-setup:1.25.2
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DB: postgresql
+      DB_PORT: 5432
+      POSTGRES_USER: kovi
+      POSTGRES_PWD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD}
+      POSTGRES_SEEDS: postgres
+
+  api:
+    build:
+      context: ../..
+      dockerfile: apps/api/Dockerfile.prod
+    restart: always
+    env_file:
+      - ../../.env
+    environment:
+      NODE_ENV: production
+      API_PORT: 3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  admin:
+    build:
+      context: ../..
+      dockerfile: apps/admin/Dockerfile.prod
+    restart: always
+    env_file:
+      - ../../.env
+    environment:
+      NODE_ENV: production
+      ADMIN_PORT: 3100
+    ports:
+      - '3100:3100'
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  orchestrator:
+    build:
+      context: ../..
+      dockerfile: apps/orchestrator/Dockerfile.prod
+    restart: always
+    env_file:
+      - ../../.env
+    environment:
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+      temporal:
+        condition: service_started
+
+  extractor-worker:
+    build:
+      context: ../..
+      dockerfile: apps/extractor-worker/Dockerfile.prod
+    restart: always
+    env_file:
+      - ../../.env
+    environment:
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  browser-worker:
+    build:
+      context: ../..
+      dockerfile: apps/browser-worker/Dockerfile.prod
+    restart: always
+    env_file:
+      - ../../.env
+    environment:
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  kovi_postgres_data:

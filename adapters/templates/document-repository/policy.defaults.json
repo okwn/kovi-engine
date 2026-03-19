@@ -1,0 +1,7 @@
+{
+  "allowedDomainsRequired": true,
+  "maxDepth": 2,
+  "maxPagesPerRun": 200,
+  "authRequired": false,
+  "retentionDays": 30
+}

@@ -1,0 +1,24 @@
+{
+  "template": "product-catalog",
+  "description": "E-commerce product catalog with pricing and variants",
+  "adapterType": "static-catalog",
+  "fetchMode": "static",
+  "authModes": ["none", "header-token-injection"],
+  "entityTypes": ["product"],
+  "defaultSelectors": {
+    "listing": [
+      { "key": "sku", "selector": "[data-sku], .product-sku", "required": true },
+      { "key": "name", "selector": ".product-name, h3", "required": true },
+      { "key": "price", "selector": ".price", "required": false },
+      { "key": "link", "selector": "a.product-link", "attribute": "href", "required": true }
+    ],
+    "detail": [
+      { "key": "name", "selector": "h1", "required": true },
+      { "key": "price", "selector": ".price", "required": true },
+      { "key": "description", "selector": ".description", "required": false },
+      { "key": "variants", "selector": ".variant", "multiple": true }
+    ]
+  },
+  "pagination": { "mode": "query-param", "paramName": "page", "maxPages": 50 },
+  "policyDefaults": { "maxDepth": 2, "maxPagesPerRun": 500 }
+}

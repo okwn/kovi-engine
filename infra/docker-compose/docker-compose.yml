@@ -1,0 +1,45 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: kovi
+      POSTGRES_USER: kovi
+      POSTGRES_PASSWORD: kovi
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../../infra/migrations:/docker-entrypoint-initdb.d
+
+  nats:
+    image: nats:2.10-alpine
+    command: ['-js']
+    ports:
+      - '4222:4222'
+
+  temporal:
+    image: temporalio/auto-setup:1.25.2
+    depends_on:
+      - postgres
+    environment:
+      DB: postgresql
+      DB_PORT: 5432
+      POSTGRES_USER: kovi
+      POSTGRES_PWD: kovi
+      POSTGRES_SEEDS: postgres
+    ports:
+      - '7233:7233'
+
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.105.0
+    command: ['--config=/etc/otelcol/config.yaml']
+    volumes:
+      - ../../infra/monitoring/otel-collector.yaml:/etc/otelcol/config.yaml
+    ports:
+      - '4317:4317'
+      - '4318:4318'
+
+volumes:
+  postgres_data:

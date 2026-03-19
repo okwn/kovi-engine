@@ -1,0 +1,32 @@
+{
+  "adapterId": "js-listing-detail",
+  "name": "JS Listing/Detail Source",
+  "version": "1.0.0",
+  "status": "active",
+  "description": "Adapter for browser-rendered list/detail websites.",
+  "supportedAuthModes": ["none", "manual-cookie-import", "header-token-injection"],
+  "supportedFetchMode": ["js"],
+  "entityTypes": ["listing_item"],
+  "requiredConfigurationFields": ["baseUrl", "crawlEntrypoints", "allowedDomains", "extractionSelectors"],
+  "optionalConfigurationFields": ["pagination", "internalLinkPatterns", "changeDetection", "exportPolicy"],
+  "policyDefaults": {
+    "allowedDomainsRequired": true,
+    "maxDepth": 3,
+    "maxPagesPerRun": 300,
+    "authRequired": false
+  },
+  "retentionDefaults": {
+    "days": 30
+  },
+  "sampleOutputs": [
+    { "id": "entry-100", "title": "Rendered Listing Item", "features": ["a", "b"] }
+  ],
+  "compatibility": {
+    "koviVersionRange": ">=0.1.0",
+    "authModes": ["none", "manual-cookie-import", "header-token-injection"],
+    "fetchModes": ["js"]
+  },
+  "changelog": [
+    { "version": "1.0.0", "date": "2026-03-19", "notes": "Initial packaged adapter." }
+  ]
+}

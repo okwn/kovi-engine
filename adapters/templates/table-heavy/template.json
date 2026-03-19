@@ -1,0 +1,15 @@
+{
+  "template": "table-heavy",
+  "description": "Table-heavy data pages (databases, reports)",
+  "adapterType": "static-catalog",
+  "fetchMode": "static",
+  "authModes": ["none"],
+  "entityTypes": ["table_row"],
+  "defaultSelectors": {
+    "listing": [
+      { "key": "rows", "selector": "table tbody tr", "multiple": true }
+    ]
+  },
+  "pagination": { "mode": "query-param", "paramName": "page" },
+  "policyDefaults": { "maxDepth": 1, "maxPagesPerRun": 100 }
+}

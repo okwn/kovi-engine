@@ -1,0 +1,15 @@
+{
+  "template": "api-assisted",
+  "description": "API-assisted extraction source where data comes from JSON endpoints",
+  "adapterType": "static-catalog",
+  "fetchMode": "static",
+  "authModes": ["header-token-injection"],
+  "entityTypes": ["api_data"],
+  "defaultSelectors": {
+    "listing": [
+      { "key": "items", "selector": "script[type='application/json']", "required": true }
+    ]
+  },
+  "pagination": { "mode": "query-param", "paramName": "page" },
+  "policyDefaults": { "maxDepth": 1, "maxPagesPerRun": 50 }
+}

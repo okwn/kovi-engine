@@ -1,0 +1,32 @@
+{
+  "adapterId": "auth-dashboard",
+  "name": "Authenticated Dashboard Source",
+  "version": "1.0.0",
+  "status": "beta",
+  "description": "Adapter for authenticated dashboard portals with form-login session bootstrap.",
+  "supportedAuthModes": ["playwright-form-login"],
+  "supportedFetchMode": ["js"],
+  "entityTypes": ["account_snapshot"],
+  "requiredConfigurationFields": ["baseUrl", "crawlEntrypoints", "allowedDomains", "extractionSelectors", "authentication"],
+  "optionalConfigurationFields": ["pagination", "internalLinkPatterns", "changeDetection", "exportPolicy"],
+  "policyDefaults": {
+    "allowedDomainsRequired": true,
+    "maxDepth": 2,
+    "maxPagesPerRun": 120,
+    "authRequired": true
+  },
+  "retentionDefaults": {
+    "days": 14
+  },
+  "sampleOutputs": [
+    { "account_id": "acct-100", "owner": "Operator User", "balance": "1000.00" }
+  ],
+  "compatibility": {
+    "koviVersionRange": ">=0.1.0",
+    "authModes": ["playwright-form-login"],
+    "fetchModes": ["js"]
+  },
+  "changelog": [
+    { "version": "1.0.0", "date": "2026-03-19", "notes": "Initial packaged adapter." }
+  ]
+}

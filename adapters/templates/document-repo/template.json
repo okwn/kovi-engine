@@ -1,0 +1,18 @@
+{
+  "template": "document-repo",
+  "description": "Document repository/file listing template",
+  "adapterType": "static-catalog",
+  "fetchMode": "static",
+  "authModes": ["none", "header-token-injection"],
+  "entityTypes": ["document"],
+  "defaultSelectors": {
+    "listing": [
+      { "key": "filename", "selector": ".file-name, td:first-child", "required": true },
+      { "key": "download_url", "selector": "a[href*='download'], a[href$='.pdf']", "attribute": "href", "required": true },
+      { "key": "size", "selector": ".file-size", "required": false },
+      { "key": "date", "selector": ".file-date", "required": false }
+    ]
+  },
+  "pagination": { "mode": "next-link", "selectors": [".pagination a"] },
+  "policyDefaults": { "maxDepth": 3, "maxPagesPerRun": 200 }
+}

@@ -1,0 +1,9 @@
+{
+  "name": "static-html-list-detail template",
+  "baseUrl": "https://example.local",
+  "crawlEntrypoints": ["https://example.local/start"],
+  "allowedDomains": ["example.local"],
+  "internalLinkPatterns": ["https://example.local/*"],
+  "maxDepth": 2,
+  "fetchMode": "static"
+}

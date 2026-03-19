@@ -1,0 +1,67 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: kovi
+          POSTGRES_USER: kovi
+          POSTGRES_PASSWORD: kovi
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U kovi -d kovi"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://kovi:kovi@localhost:5432/kovi
+      MIGRATION_VERIFY_DATABASE_URL: postgresql://kovi:kovi@localhost:5432/kovi
+      SESSION_ENCRYPTION_KEY: 0123456789abcdef0123456789abcdef
+      NODE_ENV: test
+      API_RATE_LIMIT_MAX: 200
+      API_RATE_LIMIT_WINDOW: 1 minute
+      ADMIN_RATE_LIMIT_MAX: 120
+      ADMIN_RATE_LIMIT_WINDOW: 1 minute
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.12.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify env
+        run: pnpm verify:env
+
+      - name: Verify migrations
+        run: pnpm verify:migrations
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Typecheck
+        run: pnpm typecheck
+
+      - name: Test
+        run: pnpm test
+
+      - name: Build
+        run: pnpm build

@@ -1,0 +1,16 @@
+[Unit]
+Description=Kovi Admin Service
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/kovi-engine
+EnvironmentFile=/etc/kovi/kovi.env
+ExecStart=/usr/bin/node --import tsx /opt/kovi-engine/apps/admin/src/index.ts
+Restart=always
+RestartSec=5
+User=kovi
+Group=kovi
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,37 @@
+{
+  "template": "authenticated-portal",
+  "description": "Authenticated portal/dashboard template with Playwright login",
+  "adapterType": "auth-dashboard",
+  "fetchMode": "js",
+  "authModes": ["playwright-form-login"],
+  "entityTypes": ["account_snapshot"],
+  "defaultSelectors": {
+    "detail": [
+      { "key": "account_id", "selector": "[data-account-id]", "required": true },
+      { "key": "balance", "selector": ".balance, [data-balance]", "required": false },
+      { "key": "status", "selector": ".status", "required": false }
+    ]
+  },
+  "pagination": { "mode": "none" },
+  "policyDefaults": {
+    "maxDepth": 2,
+    "maxPagesPerRun": 120,
+    "authRequired": true
+  },
+  "sampleConfig": {
+    "baseUrl": "https://portal.example.com",
+    "crawlEntrypoints": ["/dashboard"],
+    "allowedDomains": ["portal.example.com"],
+    "authentication": {
+      "type": "playwright-form-login",
+      "loginUrl": "https://portal.example.com/login",
+      "usernameSelector": "#username",
+      "passwordSelector": "#password",
+      "submitSelector": "button[type=submit]",
+      "successSelector": ".dashboard",
+      "usernameSecretRef": "PORTAL_USERNAME",
+      "passwordSecretRef": "PORTAL_PASSWORD",
+      "renewalSeconds": 3600
+    }
+  }
+}

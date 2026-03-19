@@ -1,0 +1,23 @@
+# Kovi Engine CODEOWNERS
+
+# Core packages
+packages/source-sdk/    @kovi-core-team
+packages/events/        @kovi-core-team
+packages/db/            @kovi-core-team
+packages/contracts/     @kovi-core-team
+
+# Applications
+apps/api/               @kovi-core-team
+apps/admin/             @kovi-core-team
+apps/orchestrator/      @kovi-core-team
+apps/browser-worker/    @kovi-core-team
+apps/extractor-worker/  @kovi-core-team
+
+# Infrastructure
+infra/                  @kovi-ops-team
+
+# Documentation
+docs/                   @kovi-core-team
+
+# Default
+*                       @kovi-core-team

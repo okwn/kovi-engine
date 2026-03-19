@@ -1,0 +1,22 @@
+{
+  "template": "blog-feed",
+  "description": "Blog/news feed template with pagination",
+  "adapterType": "static-catalog",
+  "fetchMode": "static",
+  "authModes": ["none"],
+  "entityTypes": ["article"],
+  "defaultSelectors": {
+    "listing": [
+      { "key": "title", "selector": "h2, .post-title", "required": true },
+      { "key": "url", "selector": "a[href]", "attribute": "href", "required": true },
+      { "key": "date", "selector": ".date, time", "required": false }
+    ],
+    "detail": [
+      { "key": "title", "selector": "h1", "required": true },
+      { "key": "content", "selector": ".content, article", "required": true },
+      { "key": "author", "selector": ".author", "required": false }
+    ]
+  },
+  "pagination": { "mode": "next-link", "selectors": [".pagination a.next", "a[rel=next]"] },
+  "policyDefaults": { "maxDepth": 2, "maxPagesPerRun": 150 }
+}

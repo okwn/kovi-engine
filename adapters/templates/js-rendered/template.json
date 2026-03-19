@@ -1,0 +1,36 @@
+{
+  "template": "js-rendered",
+  "description": "JavaScript-rendered list/detail site template",
+  "adapterType": "js-listing-detail",
+  "fetchMode": "js",
+  "authModes": ["none", "manual-cookie-import", "header-token-injection"],
+  "entityTypes": ["listing_item", "detail_item"],
+  "defaultSelectors": {
+    "listing": [
+      { "key": "id", "selector": "[data-item-id]", "required": true },
+      { "key": "title", "selector": ".item-title, [data-title]", "required": true },
+      { "key": "url", "selector": "a.item-link", "attribute": "href", "required": true }
+    ],
+    "detail": [
+      { "key": "title", "selector": "h1, .product-name", "required": true },
+      { "key": "content", "selector": ".content, .description", "required": false }
+    ]
+  },
+  "pagination": {
+    "mode": "next-link",
+    "selectors": [".load-more", "button[data-page]", ".pagination button:last-child"]
+  },
+  "policyDefaults": {
+    "maxDepth": 3,
+    "maxPagesPerRun": 300
+  },
+  "sampleConfig": {
+    "baseUrl": "https://example.com",
+    "crawlEntrypoints": ["/items"],
+    "allowedDomains": ["example.com"],
+    "extractionSelectors": {
+      "listing": [{ "key": "items", "selector": ".item", "multiple": true }],
+      "detail": [{ "key": "title", "selector": "h1" }]
+    }
+  }
+}

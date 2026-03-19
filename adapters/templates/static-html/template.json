@@ -1,0 +1,41 @@
+{
+  "template": "static-html",
+  "description": "Static HTML list/detail site template",
+  "adapterType": "static-catalog",
+  "fetchMode": "static",
+  "authModes": ["none", "manual-cookie-import", "header-token-injection"],
+  "entityTypes": ["page_content"],
+  "defaultSelectors": {
+    "listing": [
+      { "key": "id", "selector": "[data-item-id], .item-id, [data-id]", "required": true },
+      { "key": "title", "selector": "h2, h3, .title, [data-title]", "required": true },
+      { "key": "link", "selector": "a", "attribute": "href", "required": true }
+    ],
+    "detail": [
+      { "key": "title", "selector": "h1, .product-title", "required": true },
+      { "key": "description", "selector": ".description, .content, [data-description]", "required": false },
+      { "key": "price", "selector": ".price, [data-price]", "required": false }
+    ]
+  },
+  "pagination": {
+    "mode": "next-link",
+    "selectors": [".pagination a.next", ".pagination a:last-child", "a[rel=next]"]
+  },
+  "policyDefaults": {
+    "maxDepth": 2,
+    "maxPagesPerRun": 200
+  },
+  "sampleConfig": {
+    "baseUrl": "https://example.com",
+    "crawlEntrypoints": ["/products"],
+    "allowedDomains": ["example.com"],
+    "extractionSelectors": {
+      "listing": [
+        { "key": "id", "selector": ".product-card", "multiple": true }
+      ],
+      "detail": [
+        { "key": "title", "selector": "h1" }
+      ]
+    }
+  }
+}
