@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { KoviDatabase } from '@kovi/db';
 import { createAdapterPackageRegistry } from '@kovi/source-sdk';
+import type { AuthMode, FetchMode } from '@kovi/source-sdk';
 
 export interface AdapterCatalogRoutesDeps {
   db: KoviDatabase;
@@ -76,19 +77,20 @@ export const registerAdapterCatalogRoutes = (
   );
 
   app.get('/adapters/compatible', async (request: FastifyRequest, _reply: FastifyReply) => {
-    const versionRange = (request.query as Record<string, string>).koviVersion;
-    const authMode = (request.query as Record<string, string>).authMode;
-    const fetchMode = (request.query as Record<string, string>).fetchMode;
+    const rawQuery = request.query as Record<string, string>;
+    const versionRange = rawQuery.koviVersion;
+    const authMode = parseAuthMode(rawQuery.authMode);
+    const fetchMode = parseFetchMode(rawQuery.fetchMode);
 
     const manifests = internalRegistry.listManifests();
     return manifests.filter((m) => {
       if (versionRange && !satisfiesVersionRange(m.compatibility.koviVersionRange, versionRange)) {
         return false;
       }
-      if (authMode && !m.compatibility.authModes.includes(authMode as any)) {
+      if (authMode && !m.compatibility.authModes.includes(authMode)) {
         return false;
       }
-      if (fetchMode && !m.compatibility.fetchModes.includes(fetchMode as any)) {
+      if (fetchMode && !m.compatibility.fetchModes.includes(fetchMode)) {
         return false;
       }
       return true;
@@ -102,6 +104,24 @@ const satisfiesVersionRange = (supported: string, requested: string): boolean =>
     return compareVersions(minVersion, requested) <= 0;
   }
   return true;
+};
+
+const parseAuthMode = (value?: string): AuthMode | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  const allowed: AuthMode[] = ['none', 'manual-cookie-import', 'playwright-form-login', 'header-token-injection'];
+  return allowed.includes(value as AuthMode) ? (value as AuthMode) : undefined;
+};
+
+const parseFetchMode = (value?: string): FetchMode | undefined => {
+  if (!value) {
+    return undefined;
+  }
+
+  const allowed: FetchMode[] = ['static', 'js'];
+  return allowed.includes(value as FetchMode) ? (value as FetchMode) : undefined;
 };
 
 const compareVersions = (a: string, b: string): number => {
