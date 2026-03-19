@@ -1,10 +1,10 @@
-import Fastify from 'fastify';
+import Fastify, { type FastifyInstance } from 'fastify';
 import { registerDestinationRoutes, type DestinationRoutesDeps } from './routes/destinations.js';
 import { registerDeliveryRoutes, type DeliveryRoutesDeps } from './routes/deliveries.js';
 import { registerAdapterCatalogRoutes, type AdapterCatalogRoutesDeps } from './routes/adapters.js';
 
 export interface KoviApiServer {
-  app: ReturnType<typeof Fastify>;
+  app: FastifyInstance;
   start: (port: number) => Promise<void>;
   stop: () => Promise<void>;
 }
@@ -26,10 +26,10 @@ export const createKoviApiServer = (deps: KoviApiDeps): KoviApiServer => {
 
   return {
     app,
-    start: async (port: number) => {
+    start: async (port: number): Promise<void> => {
       await app.listen({ port });
     },
-    stop: async () => {
+    stop: async (): Promise<void> => {
       await app.close();
     }
   };

@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { KoviDatabase } from '@kovi/db';
-import { DestinationRegistry } from '@kovi/events';
+import type { DestinationRegistry } from '@kovi/events';
 
 export interface DestinationRoutesDeps {
   db: KoviDatabase;
@@ -14,7 +14,7 @@ export const registerDestinationRoutes = (
 ): void => {
   app.get<{ Params: { tenantId: string } }>(
     '/tenants/:tenantId/destinations',
-    async (request: FastifyRequest<{ Params: { tenantId: string } }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: { tenantId: string } }>) => {
       const { tenantId } = request.params;
       const destinations = await deps.db.listDestinations(tenantId, true);
       return destinations.map((d) => ({
@@ -76,7 +76,7 @@ export const registerDestinationRoutes = (
 
   app.patch<{ Params: { tenantId: string; destinationId: string }; Body: UpdateDestinationBody }>(
     '/tenants/:tenantId/destinations/:destinationId',
-    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string }; Body: UpdateDestinationBody }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string }; Body: UpdateDestinationBody }>) => {
       const { tenantId, destinationId } = request.params;
       const { name, status, config, eventTypes, sourceIds, entityTypes, contractVersions, maxRetries } = request.body;
 
@@ -92,14 +92,14 @@ export const registerDestinationRoutes = (
       await deps.db.updateDestination({
         destinationId,
         tenantId,
-        name,
-        status,
-        configJson: config,
-        eventTypes,
-        sourceIds,
-        entityTypes,
-        contractVersions,
-        maxRetries
+        ...(name !== undefined ? { name } : {}),
+        ...(status !== undefined ? { status } : {}),
+        ...(config !== undefined ? { configJson: config } : {}),
+        ...(eventTypes !== undefined ? { eventTypes } : {}),
+        ...(sourceIds !== undefined ? { sourceIds } : {}),
+        ...(entityTypes !== undefined ? { entityTypes } : {}),
+        ...(contractVersions !== undefined ? { contractVersions } : {}),
+        ...(maxRetries !== undefined ? { maxRetries } : {})
       });
 
       return { success: true };
@@ -108,7 +108,7 @@ export const registerDestinationRoutes = (
 
   app.delete<{ Params: { tenantId: string; destinationId: string } }>(
     '/tenants/:tenantId/destinations/:destinationId',
-    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string } }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string } }>) => {
       const { tenantId, destinationId } = request.params;
       await deps.db.updateDestination({
         destinationId,
@@ -141,7 +141,7 @@ export const registerDestinationRoutes = (
 
   app.post<{ Params: { tenantId: string; destinationId: string } }>(
     '/tenants/:tenantId/destinations/:destinationId/pause',
-    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string } }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string } }>) => {
       const { tenantId, destinationId } = request.params;
       await deps.db.updateDestination({
         destinationId,
@@ -154,7 +154,7 @@ export const registerDestinationRoutes = (
 
   app.post<{ Params: { tenantId: string; destinationId: string } }>(
     '/tenants/:tenantId/destinations/:destinationId/resume',
-    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string } }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string } }>) => {
       const { tenantId, destinationId } = request.params;
       await deps.db.updateDestination({
         destinationId,

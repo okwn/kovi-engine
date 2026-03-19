@@ -2,6 +2,7 @@ import {
   createAdapterPackageRegistry,
   loadPackagedAdapterManifestsFromDir,
   registerExternalPackagedAdapter,
+  type PackagedAdapterManifest,
   type SourceAdapter
 } from '@kovi/source-sdk';
 
@@ -34,7 +35,7 @@ export const getAdapter = async (adapterType: string): Promise<SourceAdapter> =>
   return registry.getAdapter(adapterType);
 };
 
-export const listPackagedAdapters = async () => {
+export const listPackagedAdapters = async (): Promise<PackagedAdapterManifest[]> => {
   await loadExternalRegistry();
   return registry.listManifests();
 };

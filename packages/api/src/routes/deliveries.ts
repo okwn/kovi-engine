@@ -11,17 +11,17 @@ export const registerDeliveryRoutes = (
 ): void => {
   app.get<{ Params: { tenantId: string }; Querystring: DeliveryQueryParams }>(
     '/tenants/:tenantId/deliveries',
-    async (request: FastifyRequest<{ Params: { tenantId: string }; Querystring: DeliveryQueryParams }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: { tenantId: string }; Querystring: DeliveryQueryParams }>) => {
       const { tenantId } = request.params;
       const { destinationId, sourceId, eventType, state, limit } = request.query;
 
       const deliveries = await deps.db.listDestinationDeliveries({
         tenantId,
-        destinationId,
-        sourceId,
-        eventType,
-        state,
-        limit: limit ?? 200
+        ...(destinationId ? { destinationId } : {}),
+        ...(sourceId ? { sourceId } : {}),
+        ...(eventType ? { eventType } : {}),
+        ...(state ? { state } : {}),
+        ...(limit ? { limit } : {})
       });
 
       return deliveries.map((d) => ({
@@ -54,7 +54,6 @@ export const registerDeliveryRoutes = (
       const { tenantId, deliveryId } = request.params;
       const deliveries = await deps.db.listDestinationDeliveries({
         tenantId,
-        destinationId: undefined,
         limit: 1
       });
       const delivery = deliveries.find((d) => d.id === deliveryId);
@@ -83,7 +82,7 @@ export const registerDeliveryRoutes = (
 
   app.post<{ Params: { tenantId: string; destinationId: string }; Body: ReplayDeliveryBody }>(
     '/tenants/:tenantId/destinations/:destinationId/deliveries/replay',
-    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string }; Body: ReplayDeliveryBody }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: { tenantId: string; destinationId: string }; Body: ReplayDeliveryBody }>) => {
       const { tenantId, destinationId } = request.params;
       const { actorId, limit } = request.body;
 
@@ -91,7 +90,7 @@ export const registerDeliveryRoutes = (
         tenantId,
         destinationId,
         actorId: actorId ?? 'system',
-        limit
+        ...(limit ? { limit } : {})
       });
 
       return { success: true, replayedCount: count };

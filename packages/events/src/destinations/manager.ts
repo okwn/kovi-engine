@@ -71,7 +71,7 @@ export const dispatchToDestinations = async (
       contractVersion: input.envelope.contractVersion,
       idempotencyKey: `${input.envelope.idempotencyKey}:${destination.id}`,
       payloadHash,
-      payloadJson: input.envelope,
+      payloadJson: input.envelope as unknown as Record<string, unknown>,
       maxAttempts: destination.maxRetries
     });
 

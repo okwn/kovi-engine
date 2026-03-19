@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import type { KoviDatabase } from '@kovi/db';
-import { createAdapterPackageRegistry, type PackagedAdapterManifest } from '@kovi/source-sdk';
+import { createAdapterPackageRegistry } from '@kovi/source-sdk';
 
 export interface AdapterCatalogRoutesDeps {
   db: KoviDatabase;
@@ -42,18 +42,18 @@ export const registerAdapterCatalogRoutes = (
 
   app.get<{ Params: { adapterId: string }; Querystring: { version?: string } }>(
     '/adapters/:adapterId/versions',
-    async (request: FastifyRequest<{ Params: { adapterId: string }; Querystring: { version?: string } }>, reply: FastifyReply) => {
+    async (request: FastifyRequest<{ Params: { adapterId: string }; Querystring: { version?: string } }>) => {
       const { adapterId } = request.params;
       const { version } = request.query;
       const packages = await deps.db.listAdapterPackages(version);
-      const filtered = packages.filter((p) => p.adapter_id === adapterId);
+      const filtered = packages.filter((p) => p.adapterId === adapterId);
       return filtered.map((p) => ({
         id: p.id,
-        adapterId: p.adapter_id,
+        adapterId: p.adapterId,
         version: p.version,
         name: p.name,
         status: p.status,
-        internalOnly: p.internal_only,
+        internalOnly: p.internalOnly,
         changelog: p.changelog,
         sampleOutput: p.sampleOutput,
         createdAt: p.createdAt,
