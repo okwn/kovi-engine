@@ -35,35 +35,35 @@ Kovi is **not** a CAPTCHA bypass, anti-bot evasion toolkit, or shady scraping re
 
 ```mermaid
 flowchart LR
-  SRC((Sources<br/>Configs)):::node
+  SRC["Sources\nConfigs"]:::node
 
-  subgraph CP[Control Plane]
-    API[@kovi/api<br/>HTTP API]:::svc
-    ADMIN[@kovi/admin<br/>Operator UI]:::svc
+  subgraph CP["Control Plane"]
+    API["@kovi/api\nHTTP API"]:::svc
+    ADMIN["@kovi/admin\nOperator UI"]:::svc
   end
 
-  subgraph ORCH[Temporal Orchestrator]
-    OR[@kovi/orchestrator]:::svc
+  subgraph ORCH["Temporal Orchestrator"]
+    OR["@kovi/orchestrator"]:::svc
   end
 
-  subgraph WK[Workers]
-    BW[@kovi/browser-worker<br/>JS-rendered]:::svc
-    EW[@kovi/extractor-worker<br/>Static]:::svc
+  subgraph WK["Workers"]
+    BW["@kovi/browser-worker\nJS-rendered"]:::svc
+    EW["@kovi/extractor-worker\nStatic"]:::svc
   end
 
-  subgraph ADP[Adapters & SDKs]
-    SDK[@kovi/source-sdk<br/>@kovi/adapter-sdk]:::pkg
-    PKG[Packaged Adapters<br/>(adapters/ + KOVI_ADAPTER_MANIFEST_DIR)]:::node
+  subgraph ADP["Adapters & SDKs"]
+    SDK["@kovi/source-sdk\n@kovi/adapter-sdk"]:::pkg
+    PKG["Packaged Adapters\n(adapters/ + KOVI_ADAPTER_MANIFEST_DIR)"]:::node
   end
 
-  subgraph DB[State]
-    PG[(PostgreSQL)]:::db
+  subgraph DB["State"]
+    PG["PostgreSQL\nState & Versions"]:::db
   end
 
-  subgraph EV[Events & Destinations]
-    EPK[@kovi/events]:::pkg
-    BUS[(NATS JetStream / Redis Streams)]:::bus
-    DOWN[Downstream Consumers]:::node
+  subgraph EV["Events & Destinations"]
+    EPK["@kovi/events"]:::pkg
+    BUS["NATS JetStream\n/ Redis Streams"]:::bus
+    DOWN["Downstream Consumers"]:::node
   end
 
   SRC --> API
