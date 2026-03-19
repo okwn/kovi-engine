@@ -6,5 +6,4 @@ dist/
 !.env.example
 coverage/
 .DS_Store
-pnpm-lock.yaml
 *.log
