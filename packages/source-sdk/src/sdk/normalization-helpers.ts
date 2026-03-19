@@ -1,5 +1,3 @@
-import type { PageType } from '../contracts.js';
-
 export interface NormalizationOptions {
   trimStrings?: boolean;
   lowercaseKeys?: boolean;

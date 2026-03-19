@@ -13,10 +13,18 @@ export interface AdapterTestResult<T> {
   errors: string[];
 }
 
+export interface AdapterTestHarness<TAdapter extends SourceAdapter> {
+  classify: () => string;
+  extract: (pageType: 'listing' | 'detail') => AdapterTestResult<ReturnType<TAdapter['extract']>[0]>;
+  normalize: (entity: ReturnType<TAdapter['extract']>[0]) => ReturnType<TAdapter['normalize']>;
+  shouldFollow: (nextUrl: string, currentDepth: number) => boolean;
+  validate: () => { valid: boolean; errors: string[] };
+}
+
 export const createTestHarness = <TAdapter extends SourceAdapter>(
   adapter: TAdapter,
   options: AdapterTestHarnessOptions
-) => {
+): AdapterTestHarness<TAdapter> => {
   const { source, html, url, depth = 0 } = options;
 
   const context = { source, url, depth, html };
@@ -33,7 +41,8 @@ export const createTestHarness = <TAdapter extends SourceAdapter>(
       }
     },
 
-    normalize: (entity: ReturnType<TAdapter['extract']>[0]) => adapter.normalize(entity, source),
+    normalize: (entity: ReturnType<TAdapter['extract']>[0]): ReturnType<TAdapter['normalize']> =>
+      adapter.normalize(entity, source),
 
     shouldFollow: (nextUrl: string, currentDepth: number): boolean =>
       adapter.shouldFollowLink(url, nextUrl, currentDepth, source),
@@ -56,7 +65,15 @@ export interface MockPageOptions {
   contentType?: string;
 }
 
-export const createMockPage = (options: MockPageOptions) => ({
+export interface MockPage {
+  html: string;
+  url: string;
+  statusCode: number;
+  contentType: string;
+  fetchedAt: string;
+}
+
+export const createMockPage = (options: MockPageOptions): MockPage => ({
   html: options.html,
   url: options.url,
   statusCode: options.statusCode ?? 200,

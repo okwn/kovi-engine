@@ -5,8 +5,6 @@ export * from './identity-helpers.js';
 export * from './selector-helpers.js';
 
 import type { SourceAdapter, SourceDefinition } from '../contracts.js';
-import type { NormalizationOptions } from './normalization-helpers.js';
-import type { SelectorDefinition } from './selector-helpers.js';
 
 export interface AdapterBuilderContext {
   source: SourceDefinition;
@@ -20,14 +18,20 @@ export interface AdapterTestHarnessOptions {
   url: string;
 }
 
+export interface AdapterTestHarness<T extends SourceAdapter> {
+  classify: () => ReturnType<T['classifyPage']>;
+  extract: (pageType: 'listing' | 'detail') => ReturnType<T['extract']>[0][];
+  normalize: (entity: ReturnType<T['extract']>[0]) => ReturnType<T['normalize']>;
+}
+
 export const createAdapterTestHarness = <T extends SourceAdapter>(
   adapter: T,
   options: AdapterTestHarnessOptions
-) => {
+): AdapterTestHarness<T> => {
   const { source, html, url } = options;
   return {
     classify: () => adapter.classifyPage({ source, url, depth: 0, html }),
     extract: (pageType: 'listing' | 'detail') => adapter.extract({ source, url, depth: 0, html }, pageType),
-    normalize: (entity: ReturnType<typeof adapter.extract>[0]) => adapter.normalize(entity, source)
+    normalize: (entity: ReturnType<T['extract']>[0]) => adapter.normalize(entity, source)
   };
 };
