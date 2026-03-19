@@ -1,4 +1,4 @@
-import type { SourceAdapter, SourceDefinition } from '../contracts.js';
+import type { NormalizedEntity, PageType, SourceAdapter, SourceDefinition } from '../contracts.js';
 
 export interface AdapterTestHarnessOptions {
   source: SourceDefinition;
@@ -7,32 +7,32 @@ export interface AdapterTestHarnessOptions {
   depth?: number;
 }
 
-export interface AdapterTestResult<T> {
-  pageType: string;
-  entities: T[];
+export interface AdapterTestResult {
+  pageType: PageType;
+  entities: NormalizedEntity[];
   errors: string[];
 }
 
-export interface AdapterTestHarness<TAdapter extends SourceAdapter> {
-  classify: () => string;
-  extract: (pageType: 'listing' | 'detail') => AdapterTestResult<ReturnType<TAdapter['extract']>[0]>;
-  normalize: (entity: ReturnType<TAdapter['extract']>[0]) => ReturnType<TAdapter['normalize']>;
+export interface AdapterTestHarness {
+  classify: () => PageType;
+  extract: (pageType: Exclude<PageType, 'unknown'>) => AdapterTestResult;
+  normalize: (entity: NormalizedEntity) => NormalizedEntity;
   shouldFollow: (nextUrl: string, currentDepth: number) => boolean;
   validate: () => { valid: boolean; errors: string[] };
 }
 
-export const createTestHarness = <TAdapter extends SourceAdapter>(
-  adapter: TAdapter,
+export const createTestHarness = (
+  adapter: SourceAdapter,
   options: AdapterTestHarnessOptions
-): AdapterTestHarness<TAdapter> => {
+): AdapterTestHarness => {
   const { source, html, url, depth = 0 } = options;
 
   const context = { source, url, depth, html };
 
   return {
-    classify: (): string => adapter.classifyPage(context),
+    classify: (): PageType => adapter.classifyPage(context),
 
-    extract: (pageType: 'listing' | 'detail'): AdapterTestResult<ReturnType<TAdapter['extract']>[0]> => {
+    extract: (pageType: Exclude<PageType, 'unknown'>): AdapterTestResult => {
       try {
         const entities = adapter.extract(context, pageType);
         return { pageType, entities, errors: [] };
@@ -41,8 +41,7 @@ export const createTestHarness = <TAdapter extends SourceAdapter>(
       }
     },
 
-    normalize: (entity: ReturnType<TAdapter['extract']>[0]): ReturnType<TAdapter['normalize']> =>
-      adapter.normalize(entity, source),
+    normalize: (entity: NormalizedEntity): NormalizedEntity => adapter.normalize(entity, source),
 
     shouldFollow: (nextUrl: string, currentDepth: number): boolean =>
       adapter.shouldFollowLink(url, nextUrl, currentDepth, source),
